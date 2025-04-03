@@ -16,7 +16,9 @@ fn main() {
 
     #[bench("foo")]
     {
+        // things
         sleep(Duration::from_secs(5));
+        // more things
     }
 
     if true {
