@@ -184,7 +184,7 @@ pub fn bench(_attr: TokenStream, item: TokenStream) -> TokenStream {
             .stmts
             .insert(0, parse_quote! {let mut #var_run_ident: usize = 0;});
         item.block.stmts.push(
-            parse_quote! {log::debug!("Benchmark for {}: {} microseconds over {} runs", #name, #var_ident, #var_run_ident);},
+            parse_quote! {log::debug!("Benchmark for {}: {} microseconds over {} run(s)", #name, #var_ident, #var_run_ident);},
         );
     }
 
