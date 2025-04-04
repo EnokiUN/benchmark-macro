@@ -84,6 +84,7 @@ fn handle_macro(benched: &mut Vec<String>, stmts: &mut Vec<Stmt>) -> Result<(), 
                             }
                             let name = list.first().unwrap().clone().value();
                             let var_ident = format_ident!("_bench_{}_time", name);
+                            let var_run_ident = format_ident!("_bench_{}_runs", name);
                             let instant_ident = format_ident!("_bench_{}_instant", name);
                             if !benched.contains(&name) {
                                 benched.push(name);
@@ -93,11 +94,12 @@ fn handle_macro(benched: &mut Vec<String>, stmts: &mut Vec<Stmt>) -> Result<(), 
                                 stmt_idx,
                                 parse_quote! {let #instant_ident = std::time::Instant::now();},
                             );
+                            stmts.insert(stmt_idx + 1, parse_quote! {#var_run_ident += 1;});
                             stmts.insert(
-                                stmt_idx + 2,
+                                stmt_idx + 3,
                                 parse_quote! {#var_ident +=  #instant_ident.elapsed().as_micros();},
                             );
-                            stmt_idx += 2;
+                            stmt_idx += 3;
                         }
                         Err(err) => return Err(err.to_compile_error().into()),
                     }
@@ -174,11 +176,15 @@ pub fn bench(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
     for name in benched {
         let var_ident = format_ident!("_bench_{}_time", name);
+        let var_run_ident = format_ident!("_bench_{}_runs", name);
         item.block
             .stmts
             .insert(0, parse_quote! {let mut #var_ident: u128 = 0;});
+        item.block
+            .stmts
+            .insert(0, parse_quote! {let mut #var_run_ident: usize = 0;});
         item.block.stmts.push(
-            parse_quote! {log::debug!("Benchmark for {}: {} microseconds", #name, #var_ident);},
+            parse_quote! {log::debug!("Benchmark for {}: {} microseconds over {} runs", #name, #var_ident, #var_run_ident);},
         );
     }
 
