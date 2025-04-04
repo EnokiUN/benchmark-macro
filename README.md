@@ -15,25 +15,20 @@ fn main() {
     env_logger::init();
 
     #[bench("foo")]
-    {
-        // things
-        sleep(Duration::from_secs(5));
-        // more things
-    }
+    sleep(Duration::from_secs(1));
 
-    if true {
-        #[bench("bar")]
-        sleep(Duration::from_secs(5));
+    for _ in 0..5 {
+        #[bench("baz")]
+        sleep(Duration::from_secs(1));
     }
 }
 ```
 
 ```sh
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.73s
 ❯ RUST_LOG="debug" cargo run
    Compiling benchmark-macro v0.1.0 (/home/enoki/Projects/benchmark-macro)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.50s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.84s
      Running `target/debug/benchmark-macro`
-[2025-04-03T20:21:43Z DEBUG benchmark_macro] Benchmark for foo: 5000103 microseconds
-[2025-04-03T20:21:43Z DEBUG benchmark_macro] Benchmark for bar: 5000092 microseconds
+[2025-04-04T15:30:11Z DEBUG benchmark_macro] Benchmark for foo: 1000105 microseconds over 1 run(s)
+[2025-04-04T15:30:11Z DEBUG benchmark_macro] Benchmark for baz: 5000483 microseconds over 5 run(s)
 ```
